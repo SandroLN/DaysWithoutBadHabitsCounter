@@ -40,7 +40,7 @@ class MainViewModelTest {
         assertEquals(true, communication.checkCalledCounts(1))
         assertEquals(true, communication.isSame(UiState.NDays(days = 5)))
         viewModel.reset()
-        assertEquals(true, repository.resetCalledCount(2))
+        assertEquals(true, repository.resetCalledCount(1))
         assertEquals(true, communication.checkCalledCounts(2))
         assertEquals(true, communication.isSame(UiState.ZeroDays))
     }
