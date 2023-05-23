@@ -17,4 +17,8 @@ interface SharedPref {
 
     class Base : SharedPref.Abstract("release")
     class Test : SharedPref.Abstract("uiTest")
+    class Factory(private val useTest: Boolean) : SharedPref {
+        override fun make(context: Context): SharedPreferences =
+            (if (useTest) Test() else Base()).make(context)
+    }
 }
