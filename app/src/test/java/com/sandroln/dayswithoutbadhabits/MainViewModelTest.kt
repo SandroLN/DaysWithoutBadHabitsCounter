@@ -10,7 +10,7 @@ class MainViewModelTest {
     @Test
     fun test_0_days_and_reinit() {
         val repository = FakeRepository.Base(0)
-        val communication = FakeCommunication.Base()
+        val communication = FakeMainCommunication.Base()
         val viewModel = MainViewModel(repository, communication)
         viewModel.init(isFirstRun = true)
         assertEquals(true, communication.checkCalledCounts(1))
@@ -22,7 +22,7 @@ class MainViewModelTest {
     @Test
     fun test_N_days_and_reinit() {
         val repository = FakeRepository.Base(5)
-        val communication = FakeCommunication.Base()
+        val communication = FakeMainCommunication.Base()
         val viewModel = MainViewModel(repository, communication)
         viewModel.init(isFirstRun = true)
         assertEquals(true, communication.checkCalledCounts(1))
@@ -34,7 +34,7 @@ class MainViewModelTest {
     @Test
     fun test_reset() {
         val repository = FakeRepository.Base(5)
-        val communication = FakeCommunication.Base()
+        val communication = FakeMainCommunication.Base()
         val viewModel = MainViewModel(repository, communication)
         viewModel.init(isFirstRun = true)
         assertEquals(true, communication.checkCalledCounts(1))
@@ -64,12 +64,12 @@ private interface FakeRepository : MainRepository {
     }
 }
 
-private interface FakeCommunication : MainCommunication.Mutable {
+private interface FakeMainCommunication : MainCommunication.Mutable {
 
     fun checkCalledCounts(count: Int): Boolean
     fun isSame(uiState: UiState): Boolean
 
-    class Base : FakeCommunication {
+    class Base : FakeMainCommunication {
 
         private lateinit var state: UiState
         private var callCount = 0

@@ -1,7 +1,6 @@
 package com.sandroln.dayswithoutbadhabits
 
 import android.app.Application
-import androidx.lifecycle.MutableLiveData
 
 class App : Application(), ProvideViewModel {
 
@@ -14,7 +13,7 @@ class App : Application(), ProvideViewModel {
                 CacheDataSource.Base(SharedPref.Factory(BuildConfig.DEBUG).make(this)),
                 Now.Base()
             ),
-            MainCommunication.Base(MutableLiveData())
+            MainCommunication.Base()
         )
 
     }

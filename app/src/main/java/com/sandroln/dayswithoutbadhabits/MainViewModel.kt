@@ -3,13 +3,14 @@ package com.sandroln.dayswithoutbadhabits
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import com.sandroln.dayswithoutbadhabits.core.Init
 
 class MainViewModel(
     private val repository: MainRepository,
     private val communication: MainCommunication.Mutable
-) : ViewModel(), MainCommunication.Observe {
+) : ViewModel(), MainCommunication.Observe, Init {
 
-    fun init(isFirstRun: Boolean) {
+    override fun init(isFirstRun: Boolean) {
         if (isFirstRun) {
             val days = repository.days()
             val value: UiState = if (days == 0)
