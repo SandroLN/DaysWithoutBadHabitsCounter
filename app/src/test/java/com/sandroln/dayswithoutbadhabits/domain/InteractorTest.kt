@@ -26,7 +26,7 @@ class Interactor {
     }
 
     @Test
-    fun `test can add new card true`() {
+    fun `test can add new card`() {
         val repository = FakeRepository(listOf(Card.ZeroDays("a", 1L)))
         val interactor = NewMainInteractor.Base(repository, maxItemsCount = 2)
 
@@ -79,7 +79,7 @@ class Interactor {
         interactor.updateCard(1L, "c")
 
         val actual = interactor.cards()
-        val expected = listOf(Card.ZeroDays("с", 1L), Card.ZeroDays("b", 2L))
+        val expected = listOf(Card.ZeroDays("c", 1L), Card.ZeroDays("b", 2L))
         assertEquals(expected, actual)
     }
 
