@@ -1,6 +1,6 @@
 package com.sandroln.dayswithoutbadhabits.domain
 
-interface NewMainInteractor {
+interface NewMainInteractor : ResetCard {
 
     fun cards(): List<Card>
 
@@ -11,6 +11,8 @@ interface NewMainInteractor {
     fun deleteCard(id: Long)
 
     fun updateCard(id: Long, newText: String)
+}
 
+interface ResetCard {
     fun resetCard(id: Long)
 }
