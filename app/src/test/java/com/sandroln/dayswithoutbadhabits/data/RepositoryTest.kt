@@ -19,7 +19,7 @@ class RepositoryTest : BaseTest() {
     }
 
     @Test
-    fun `test card`() {
+    fun `test cards`() {
         val now = FakeNow.Base()
         val day = 24 * 3600 * 1000
         val sevenDays = 7L * day
@@ -27,9 +27,9 @@ class RepositoryTest : BaseTest() {
         now.addTime(sevenDays)
         val cacheDataSource = FakeCacheDataSource(
             listOf(
-                CardCache(id = 0L, changeEditable = 0L, text = "x"),
-                CardCache(id = threeDays, changeEditable = threeDays, text = "three"),
-                CardCache(id = sevenDays, changeEditable = threeDays, text = "y")
+                CardCache(id = 0L, countStartTime = 0L, text = "x"),
+                CardCache(id = threeDays, countStartTime = threeDays, text = "three"),
+                CardCache(id = sevenDays, countStartTime = sevenDays, text = "y")
             )
         )
         val repository = NewRepository(cacheDataSource, now)
@@ -52,7 +52,7 @@ class RepositoryTest : BaseTest() {
 
         val cacheDataSource = FakeCacheDataSource(
             listOf(
-                CardCache(id = 0L, changeEditable = 0L, text = "x")
+                CardCache(id = 0L, countStartTime = 0L, text = "x")
             )
         )
         val repository = NewRepository(cacheDataSource, now)
@@ -72,18 +72,14 @@ class RepositoryTest : BaseTest() {
     fun `test update card`() {
         val now = FakeNow.Base()
         val cacheDataSource = FakeCacheDataSource(
-            listOf(
-                CardCache(id = 100L, changeEditable = 0L, text = "x")
-            )
+            listOf(CardCache(id = 0L, countStartTime = 0L, text = "x"))
         )
         val repository = NewRepository(cacheDataSource, now)
 
         repository.updateCard(0L, "new habit")
 
         val actual = repository.cards()
-        val expected = listOf(
-            Card.ZeroDays("new habit", 0L)
-        )
+        val expected = listOf(Card.ZeroDays("new habit", 0L))
 
         assertEquals(expected, actual)
     }
@@ -93,8 +89,8 @@ class RepositoryTest : BaseTest() {
         val now = FakeNow.Base()
         val cacheDataSource = FakeCacheDataSource(
             listOf(
-                CardCache(id = 100L, changeEditable = 10L, text = "x"),
-                CardCache(id = 0L, changeEditable = 0L, text = "y")
+                CardCache(id = 10L, countStartTime = 10L, text = "x"),
+                CardCache(id = 0L, countStartTime = 0L, text = "y")
             )
         )
         val repository = NewRepository(cacheDataSource, now)
@@ -126,7 +122,10 @@ class RepositoryTest : BaseTest() {
         expected = listOf(Card.ZeroDays("x", 0L))
         assertEquals(expected, actual)
 
-        assertEquals(CardCache(id = 0L, countStartTime = sevenDays), cacheDataSource.cards()[0])
+        assertEquals(
+            CardCache(id = 0L, countStartTime = sevenDays, text = "x"),
+            cacheDataSource.cards()[0]
+        )
     }
 }
 
@@ -143,24 +142,24 @@ private class FakeCacheDataSource(list: List<CardCache>) : NewCacheDataSource {
     }
 
     override fun addCard(id: Long, text: String) {
-        val cards = CardCache(id = id, text = text)
+        val card = CardCache(id = id, countStartTime = id, text = text)
         cards.add(card)
     }
 
     override fun updateCard(id: Long, text: String) {
-        val card = cards.find { it.id == id }!!
+        val card = cards.find { it.same(id) }!!
         val index = cards.indexOf(card)
         val new = card.updateText(newText = text)
         cards.set(index, new)
     }
 
-    override fun deleteCard(id: Long){
-        val card = cards.find { it.id == id }!!
+    override fun deleteCard(id: Long) {
+        val card = cards.find { it.same(id) }!!
         cards.remove(card)
     }
 
     override fun resetCard(id: Long, countStartTime: Long) {
-        val card = cards.find { it.id == id }!!
+        val card = cards.find { it.same(id) }!!
         val index = cards.indexOf(card)
         val new = card.updateCountStartTime(countStartTime = countStartTime)
         cards.set(index, new)
