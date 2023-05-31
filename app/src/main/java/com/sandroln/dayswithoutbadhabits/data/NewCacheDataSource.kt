@@ -1,14 +1,35 @@
 package com.sandroln.dayswithoutbadhabits.data
 
+import android.content.SharedPreferences
+import com.google.gson.Gson
+
 interface NewCacheDataSource {
+    fun read(): MutableList<CardCache>
+    fun save(list: MutableList<CardCache>)
 
-    fun cards(): List<CardCache>
+    class Base(
+        private val sharedPreferences: SharedPreferences,
+        private val gson: Gson
+    ) : NewCacheDataSource {
 
-    fun addCard(id: Long, text: String)
+        override fun read(): MutableList<CardCache> {
+            val empty = CacheListWrapper()
+            val default = gson.toJson(empty)
+            val cache = sharedPreferences.getString(KEY, default)
+            val saved = gson.fromJson(cache, CacheListWrapper::class.java)
+            return saved.list
+        }
 
-    fun updateCard(id: Long, text: String)
+        override fun save(list: MutableList<CardCache>) {
+            val newItem = CacheListWrapper(list)
+            val string = gson.toJson(newItem)
+            sharedPreferences.edit().putString(KEY, string).apply()
+        }
 
-    fun deleteCard(id: Long)
+        companion object {
+            private const val KEY = "cached cards"
+        }
+    }
 
-    fun resetCard(id: Long, countStartTime: Long)
+    private data class CacheListWrapper(val list: MutableList<CardCache> = ArrayList())
 }
