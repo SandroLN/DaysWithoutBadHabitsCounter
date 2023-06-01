@@ -1,6 +1,12 @@
 package com.sandroln.dayswithoutbadhabits
 
 import android.app.Application
+import com.google.gson.Gson
+import com.sandroln.dayswithoutbadhabits.data.NewCacheDataSource
+import com.sandroln.dayswithoutbadhabits.data.NewRepository
+import com.sandroln.dayswithoutbadhabits.domain.NewMainInteractor
+import com.sandroln.dayswithoutbadhabits.presentation.MainCommunication
+import com.sandroln.dayswithoutbadhabits.presentation.MainViewModel
 
 class App : Application(), ProvideViewModel {
 
@@ -9,21 +15,26 @@ class App : Application(), ProvideViewModel {
     override fun onCreate() {
         super.onCreate()
         viewModel = MainViewModel(
-            MainRepository.Base(
-                CacheDataSource.Base(SharedPref.Factory(BuildConfig.DEBUG).make(this)),
-                Now.Base()
+            MainCommunication.Base(),
+            NewMainInteractor.Base(
+                NewRepository(
+                    NewCacheDataSource.Base(
+                        SharedPref.Factory(BuildConfig.DEBUG).make(this),
+                        Gson()
+                    ),
+                    Now.Base(),
+                ),
+                3
             ),
-            MainCommunication.Base()
         )
-
     }
 
-    override fun provideViewModel(): MainViewModel {
+    override fun provideMainViewModel(): MainViewModel {
         return viewModel
     }
 }
 
 interface ProvideViewModel {
 
-    fun provideViewModel(): MainViewModel
+    fun provideMainViewModel(): MainViewModel
 }
